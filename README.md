@@ -1,8 +1,8 @@
-# cellCertR
+# scCertify
 
 ## Explainable Confidence Scoring for Single-Cell RNA-seq Cell Annotations
 
-`cellCertR` is an R package for evaluating the reliability of single-cell RNA-seq cell annotations using explainable confidence scoring.
+`scCertify` is an R package for evaluating the reliability of single-cell RNA-seq cell annotations using explainable confidence scoring.
 
 The framework integrates:
 
@@ -14,7 +14,7 @@ The framework integrates:
 * Confidence calibration
 * Explainable confidence attribution
 
-The goal of `cellCertR` is to provide a biologically interpretable framework for assessing annotation trustworthiness in single-cell datasets.
+The goal of `scCertify` is to provide a biologically interpretable framework for assessing annotation trustworthiness in single-cell datasets.
 
 ---
 
@@ -32,7 +32,7 @@ In real biological datasets, annotation uncertainty can arise from:
 * Weak marker expression
 * Ambiguous neighborhood structure
 
-`cellCertR` addresses this by quantifying annotation confidence and explaining why specific cells are uncertain.
+`scCertify` addresses this by quantifying annotation confidence and explaining why specific cells are uncertain.
 
 ---
 
@@ -111,7 +111,7 @@ BiocManager::install(c(
 
 ```r
 devtools::install_github(
-  "Jaya-Surya-dev/cellCertR"
+  "Jaya-Surya-dev/scCertify"
 )
 ```
 
