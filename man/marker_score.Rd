@@ -7,6 +7,6 @@
 marker_score(object, markers, label_column = "predicted_label")
 }
 \description{
-Calculates marker confidence
-using automatic ontology matching.
+Uses UCell enrichment scoring
+for robust marker evaluation.
 }

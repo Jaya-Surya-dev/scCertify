@@ -1,7 +1,7 @@
 #' Marker Consistency Score
 #'
-#' Calculates marker confidence
-#' using automatic ontology matching.
+#' Uses UCell enrichment scoring
+#' for robust marker evaluation.
 #'
 #' @export
 
@@ -11,27 +11,22 @@ marker_score <- function(
     label_column = "predicted_label"
 ) {
 
-  scores <- numeric(
-    ncol(object)
-  )
-
   labels <- object@meta.data[
     ,
     label_column
   ]
 
-  for(i in seq_along(labels)) {
+  scores <- numeric(
+    length(labels)
+  )
 
-    label <- as.character(
-      labels[i]
-    )
+  for(label in unique(labels)) {
 
     matched_label <- match_labels(
       label,
       names(markers)
     )
 
-    # No ontology match
     if(is.na(matched_label)) {
 
       warning(
@@ -40,8 +35,6 @@ marker_score <- function(
           label
         )
       )
-
-      scores[i] <- 0
 
       next
     }
@@ -52,41 +45,45 @@ marker_score <- function(
       genes %in% rownames(object)
     ]
 
-    # No marker genes found
     if(length(genes) == 0) {
 
       warning(
         paste(
-          "No marker genes detected for:",
+          "No marker genes found for:",
           matched_label
         )
       )
 
-      scores[i] <- 0
-
       next
     }
 
-    expr <- FetchData(
-      object,
-      vars = genes,
-      cells = colnames(object)[i]
+    signature_name <- paste0(
+      matched_label,
+      "_Signature"
     )
 
-    expr <- as.numeric(expr)
+    feature_list <- list()
 
-    expr <- expr[
-      !is.na(expr)
+    feature_list[[signature_name]] <- genes
+
+    object <- AddModuleScore_UCell(
+      object,
+      features = feature_list
+    )
+
+    score_column <- paste0(
+      signature_name,
+      "_UCell"
+    )
+
+    idx <- which(
+      labels == label
+    )
+
+    scores[idx] <- object@meta.data[
+      idx,
+      score_column
     ]
-
-    if(length(expr) == 0) {
-
-      scores[i] <- 0
-
-      next
-    }
-
-    scores[i] <- mean(expr)
   }
 
   return(scores)
