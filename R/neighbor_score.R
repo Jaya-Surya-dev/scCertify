@@ -1,6 +1,14 @@
 #' Neighbor Agreement Score
 #'
-#' Computes local label agreement
+#' Computes local label agreement.
+#'
+#' @param object Seurat object
+#' @param reduction Dimensional reduction method
+#' @param dims PCA dimensions
+#' @param k Number of neighbors
+#' @param label_column Metadata label column
+#'
+#' @return Numeric vector
 #'
 #' @export
 
@@ -12,7 +20,7 @@ neighbor_score <- function(
     label_column = "predicted_label"
 ) {
 
-  embeddings <- Embeddings(
+  embeddings <- Seurat::Embeddings(
     object,
     reduction
   )
@@ -20,7 +28,9 @@ neighbor_score <- function(
   # Automatically determine dimensions
   if(is.null(dims)) {
 
-    max_dims <- ncol(embeddings)
+    max_dims <- ncol(
+      embeddings
+    )
 
     dims <- 1:min(
       10,

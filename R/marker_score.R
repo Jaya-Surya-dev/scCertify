@@ -3,6 +3,12 @@
 #' Uses UCell enrichment scoring
 #' for robust marker evaluation.
 #'
+#' @param object Seurat object
+#' @param markers Named marker gene list
+#' @param label_column Metadata label column
+#'
+#' @return Numeric vector
+#'
 #' @export
 
 marker_score <- function(
@@ -66,9 +72,10 @@ marker_score <- function(
 
     feature_list[[signature_name]] <- genes
 
-    object <- AddModuleScore_UCell(
+    object <- UCell::AddModuleScore_UCell(
       object,
-      features = feature_list
+      features = feature_list,
+      ncores = 1
     )
 
     score_column <- paste0(

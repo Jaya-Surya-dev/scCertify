@@ -3,6 +3,11 @@
 #' Automatically matches predicted
 #' labels to available marker sets.
 #'
+#' @param label Cell label
+#' @param marker_names Available marker names
+#'
+#' @return Matched ontology label
+#'
 #' @export
 
 match_labels <- function(

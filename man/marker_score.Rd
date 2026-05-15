@@ -6,6 +6,16 @@
 \usage{
 marker_score(object, markers, label_column = "predicted_label")
 }
+\arguments{
+\item{object}{Seurat object}
+
+\item{markers}{Named marker gene list}
+
+\item{label_column}{Metadata label column}
+}
+\value{
+Numeric vector
+}
 \description{
 Uses UCell enrichment scoring
 for robust marker evaluation.

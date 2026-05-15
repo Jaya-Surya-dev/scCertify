@@ -6,6 +6,14 @@
 \usage{
 match_labels(label, marker_names)
 }
+\arguments{
+\item{label}{Cell label}
+
+\item{marker_names}{Available marker names}
+}
+\value{
+Matched ontology label
+}
 \description{
 Automatically matches predicted
 labels to available marker sets.

@@ -12,6 +12,20 @@ neighbor_score(
   label_column = "predicted_label"
 )
 }
+\arguments{
+\item{object}{Seurat object}
+
+\item{reduction}{Dimensional reduction method}
+
+\item{dims}{PCA dimensions}
+
+\item{k}{Number of neighbors}
+
+\item{label_column}{Metadata label column}
+}
+\value{
+Numeric vector
+}
 \description{
-Computes local label agreement
+Computes local label agreement.
 }
