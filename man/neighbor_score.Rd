@@ -7,11 +7,11 @@
 neighbor_score(
   object,
   reduction = "pca",
-  dims = 1:20,
-  k = 20,
+  dims = NULL,
+  k = 10,
   label_column = "predicted_label"
 )
 }
 \description{
-Computes local label agreement.
+Computes local label agreement
 }

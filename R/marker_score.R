@@ -1,10 +1,7 @@
 #' Marker Consistency Score
 #'
-#' Calculates marker-based confidence score.
-#'
-#' @param object Seurat object
-#' @param markers named marker list
-#' @param label_column metadata column
+#' Calculates marker confidence
+#' using automatic ontology matching.
 #'
 #' @export
 
@@ -14,25 +11,59 @@ marker_score <- function(
     label_column = "predicted_label"
 ) {
 
-  scores <- numeric(ncol(object))
+  scores <- numeric(
+    ncol(object)
+  )
 
-  for(i in 1:ncol(object)) {
+  labels <- object@meta.data[
+    ,
+    label_column
+  ]
 
-    label <- object@meta.data[i, label_column]
+  for(i in seq_along(labels)) {
 
-    if(!label %in% names(markers)) {
-      scores[i] <- NA
+    label <- as.character(
+      labels[i]
+    )
+
+    matched_label <- match_labels(
+      label,
+      names(markers)
+    )
+
+    # No ontology match
+    if(is.na(matched_label)) {
+
+      warning(
+        paste(
+          "No ontology match for:",
+          label
+        )
+      )
+
+      scores[i] <- 0
+
       next
     }
 
-    genes <- markers[[label]]
+    genes <- markers[[matched_label]]
 
     genes <- genes[
       genes %in% rownames(object)
     ]
 
+    # No marker genes found
     if(length(genes) == 0) {
+
+      warning(
+        paste(
+          "No marker genes detected for:",
+          matched_label
+        )
+      )
+
       scores[i] <- 0
+
       next
     }
 
@@ -42,9 +73,20 @@ marker_score <- function(
       cells = colnames(object)[i]
     )
 
-    scores[i] <- mean(
-      as.numeric(expr)
-    )
+    expr <- as.numeric(expr)
+
+    expr <- expr[
+      !is.na(expr)
+    ]
+
+    if(length(expr) == 0) {
+
+      scores[i] <- 0
+
+      next
+    }
+
+    scores[i] <- mean(expr)
   }
 
   return(scores)

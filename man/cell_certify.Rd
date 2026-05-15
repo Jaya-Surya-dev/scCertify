@@ -7,5 +7,5 @@
 cell_certify(object, markers, label_column = "predicted_label")
 }
 \description{
-Main confidence scoring pipeline.
+Main confidence framework
 }

@@ -6,13 +6,7 @@
 \usage{
 marker_score(object, markers, label_column = "predicted_label")
 }
-\arguments{
-\item{object}{Seurat object}
-
-\item{markers}{named marker list}
-
-\item{label_column}{metadata column}
-}
 \description{
-Calculates marker-based confidence score.
+Calculates marker confidence
+using automatic ontology matching.
 }

@@ -1,25 +1,45 @@
 #' Neighbor Agreement Score
 #'
-#' Computes local label agreement.
+#' Computes local label agreement
 #'
 #' @export
 
 neighbor_score <- function(
     object,
     reduction = "pca",
-    dims = 1:20,
-    k = 20,
+    dims = NULL,
+    k = 10,
     label_column = "predicted_label"
 ) {
 
   embeddings <- Embeddings(
     object,
     reduction
-  )[, dims]
+  )
+
+  # Automatically determine dimensions
+  if(is.null(dims)) {
+
+    max_dims <- ncol(embeddings)
+
+    dims <- 1:min(
+      10,
+      max_dims
+    )
+  }
+
+  embeddings <- embeddings[
+    ,
+    dims,
+    drop = FALSE
+  ]
 
   nn <- FNN::get.knn(
     embeddings,
-    k = k
+    k = min(
+      k,
+      nrow(embeddings) - 1
+    )
   )
 
   labels <- object@meta.data[
@@ -27,16 +47,19 @@ neighbor_score <- function(
     label_column
   ]
 
-  scores <- numeric(length(labels))
+  scores <- numeric(
+    length(labels)
+  )
 
-  for(i in 1:length(labels)) {
+  for(i in seq_along(labels)) {
 
     neighbor_labels <- labels[
       nn$nn.index[i, ]
     ]
 
     scores[i] <- mean(
-      neighbor_labels == labels[i]
+      neighbor_labels ==
+        labels[i]
     )
   }
 
