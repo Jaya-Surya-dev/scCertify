@@ -1,38 +1,38 @@
 # scCertify
 
-## Explainable Confidence Scoring for Single-Cell RNA-seq Cell Annotations
+## Explainable Confidence Scoring for Single-Cell RNA-seq Annotations
 
-`scCertify` is an R package for evaluating the reliability of single-cell RNA-seq cell annotations using explainable confidence scoring.
+`scCertify` is an R package for evaluating the reliability of single-cell RNA-seq annotations using explainable confidence scoring.
 
 The framework integrates:
 
-* Marker enrichment scoring (UCell)
-* Neighborhood agreement analysis
+* UCell-based marker enrichment
+* Neighborhood agreement scoring
 * Entropy-based uncertainty estimation
-* Doublet-aware confidence scoring
+* Doublet-aware confidence modeling
 * Ontology-aware label matching
 * Confidence calibration
 * Explainable confidence attribution
 
-The goal of `scCertify` is to provide a biologically interpretable framework for assessing annotation trustworthiness in single-cell datasets.
+`scCertify` aims to provide a biologically interpretable framework for identifying reliable and uncertain cell annotations in single-cell datasets.
 
 ---
 
-# Why cellCertR?
+# Why scCertify?
 
-Cell annotation tools often provide labels without estimating how reliable those annotations are.
+Most annotation tools assign labels without estimating how trustworthy those labels are.
 
-In real biological datasets, annotation uncertainty can arise from:
+In real single-cell datasets, uncertainty can arise from:
 
 * Transitional cellular states
 * Technical doublets
 * Sparse transcriptomic profiles
-* Batch effects
+* Weak marker enrichment
 * Reference atlas mismatch
-* Weak marker expression
 * Ambiguous neighborhood structure
+* Batch effects
 
-`scCertify` addresses this by quantifying annotation confidence and explaining why specific cells are uncertain.
+`scCertify` quantifies annotation reliability and explains why cells are considered uncertain.
 
 ---
 
@@ -40,11 +40,11 @@ In real biological datasets, annotation uncertainty can arise from:
 
 ## Current Features
 
-* Single-cell annotation confidence scoring
-* UCell-based marker enrichment
-* kNN neighborhood agreement scoring
+* Confidence scoring for single-cell annotations
+* UCell-based marker enrichment scoring
+* kNN neighborhood agreement analysis
 * Entropy-based uncertainty estimation
-* Doublet-aware confidence modeling
+* Doublet-aware confidence scoring
 * Ontology-aware label matching
 * Confidence calibration
 * Confidence classification
@@ -56,7 +56,7 @@ In real biological datasets, annotation uncertainty can arise from:
 
 # Workflow Overview
 
-```text
+```text id="k29d8s"
 Single-cell RNA-seq Data
             ↓
       SingleR Annotation
@@ -85,7 +85,7 @@ Single-cell RNA-seq Data
 
 ## Install Dependencies
 
-```r
+```r id="h72d9s"
 install.packages(c(
   "Seurat",
   "ggplot2",
@@ -107,9 +107,9 @@ BiocManager::install(c(
 
 ---
 
-## Install cellCertR
+## Install scCertify
 
-```r
+```r id="u93d8x"
 devtools::install_github(
   "Jaya-Surya-dev/scCertify"
 )
@@ -121,8 +121,8 @@ devtools::install_github(
 
 ## Load Libraries
 
-```r
-library(cellCertR)
+```r id="p82d7q"
+library(scCertify)
 
 library(Seurat)
 
@@ -139,7 +139,7 @@ library(scDblFinder)
 
 ## Load Example Dataset
 
-```r
+```r id="w71x8p"
 data("pbmc_small")
 ```
 
@@ -147,7 +147,7 @@ data("pbmc_small")
 
 ## Preprocess Data
 
-```r
+```r id="m28d9w"
 pbmc_small <- NormalizeData(pbmc_small)
 
 pbmc_small <- FindVariableFeatures(pbmc_small)
@@ -166,7 +166,7 @@ pbmc_small <- RunUMAP(
 
 ## Run SingleR Annotation
 
-```r
+```r id="v74d8q"
 sce <- as.SingleCellExperiment(
   pbmc_small
 )
@@ -186,7 +186,7 @@ pbmc_small$predicted_label <- pred$labels
 
 ## Detect Doublets
 
-```r
+```r id="j91d7x"
 sce <- scDblFinder(sce)
 
 pbmc_small$doublet_score <-
@@ -200,7 +200,7 @@ pbmc_small$doublet_class <-
 
 ## Define Marker Database
 
-```r
+```r id="q17d8v"
 markers <- list(
 
   "B_cell" = c(
@@ -239,7 +239,7 @@ markers <- list(
 
 ## Calculate Entropy
 
-```r
+```r id="z62d7r"
 pbmc_small$entropy_score <-
   entropy_score(
     pred$scores
@@ -262,9 +262,9 @@ pbmc_small$entropy_norm <- (
 
 ---
 
-## Run cellCertR
+## Run scCertify
 
-```r
+```r id="f81d9m"
 pbmc_small <- cell_certify(
   pbmc_small,
   markers
@@ -277,7 +277,7 @@ pbmc_small <- cell_certify(
 
 ## Confidence Score UMAP
 
-```r
+```r id="g53d7x"
 FeaturePlot(
   pbmc_small,
   features = "confidence_score"
@@ -290,7 +290,7 @@ FeaturePlot(
 
 ## Confidence Classes
 
-```r
+```r id="r84d1q"
 DimPlot(
   pbmc_small,
   group.by = "confidence_class"
@@ -303,7 +303,7 @@ DimPlot(
 
 ## Entropy Landscape
 
-```r
+```r id="d72x8p"
 FeaturePlot(
   pbmc_small,
   features = "entropy_norm"
@@ -314,9 +314,9 @@ FeaturePlot(
 
 ---
 
-# Explain Cell Confidence
+# Explain Confidence Attribution
 
-```r
+```r id="x91d7v"
 cell_id <- colnames(
   pbmc_small
 )[1]
@@ -329,7 +329,7 @@ explain_confidence(
 
 Example output:
 
-```text
+```text id="j37d8r"
 [1] "Weak marker enrichment"
 [2] "High annotation uncertainty"
 [3] "Possible doublet contamination"
@@ -358,8 +358,8 @@ Confidence =
 
 # Package Structure
 
-```text
-cellCertR/
+```text id="u51d8p"
+scCertify/
 
 ├── R/
 │   ├── calibrate_confidence.R
@@ -398,11 +398,11 @@ cellCertR/
 
 # Citation
 
-If you use `cellCertR` in your work, please cite:
+If you use `scCertify` in your work, please cite:
 
-```text
+```text id="n84d7x"
 Doddetipalli JS.
-cellCertR: Explainable confidence scoring for
+scCertify: Explainable confidence scoring for
 single-cell RNA-seq annotations.
 ```
 
