@@ -7,11 +7,17 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-\`\`\`{r setup, include=FALSE} knitr::opts_chunk\$set( collapse = TRUE, comment = "#\>" )
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>"
+)
+```
 
 Introduction
 
-scCertify is an R package for explainable confidence scoring of single-cell RNA-seq annotations.
+scCertify is an R package for explainable confidence scoring
+of single-cell RNA-seq annotations.
 
 The framework integrates:
 
