@@ -1,6 +1,6 @@
 Package: scCertify
 Title: Explainable Confidence Scoring for Single-Cell Annotations
-Version: 0.99.0
+Version: 0.99.1
 Authors@R:
     person(
       "Jaya Surya",

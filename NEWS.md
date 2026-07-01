@@ -1,4 +1,4 @@
-# scCertify 0.99.0
+# scCertify 0.99.1
 
 ## New Features
 
@@ -13,3 +13,5 @@
 - Added explainable confidence attribution
 - Added vignette workflow documentation
 - Added Bioconductor compatibility improvements
+- Improved vignette formatting
+- Minor documentation updates
