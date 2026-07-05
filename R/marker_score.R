@@ -10,7 +10,27 @@
 #' @return Numeric vector of marker consistency scores.
 #'
 #' @examples
-#' NULL
+#' \dontrun{
+#' library(Seurat)
+#'
+#' counts <- matrix(
+#'   rpois(200, lambda = 5),
+#'   nrow = 20
+#' )
+#'
+#' rownames(counts) <- paste0("Gene", 1:20)
+#' colnames(counts) <- paste0("Cell", 1:10)
+#'
+#' obj <- CreateSeuratObject(counts)
+#' obj$predicted_label <- rep(c("T cell", "B cell"), each = 5)
+#'
+#' markers <- list(
+#'   "T cell" = c("Gene1", "Gene2"),
+#'   "B cell" = c("Gene3", "Gene4")
+#' )
+#'
+#' marker_score(obj, markers)
+#' }
 #'
 #' @export
 

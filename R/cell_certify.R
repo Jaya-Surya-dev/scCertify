@@ -7,19 +7,53 @@
 #' @param object A Seurat or SingleCellExperiment object.
 #' @param markers Named list of marker genes.
 #' @param label_column Metadata column containing predicted labels.
+#' @param moderate_threshold Lower threshold for the "Moderate"
+#'   confidence class.
+#' @param high_threshold Lower threshold for the "High"
+#'   confidence class.
 #'
 #' @return The input object with confidence scores and classifications
 #' added to the metadata.
 #'
 #' @examples
-#' NULL
+#' \dontrun{
+#' library(Seurat)
+#'
+#' counts <- matrix(
+#'   rpois(200, lambda = 5),
+#'   nrow = 20
+#' )
+#'
+#' rownames(counts) <- paste0("Gene", 1:20)
+#' colnames(counts) <- paste0("Cell", 1:10)
+#'
+#' obj <- CreateSeuratObject(counts)
+#' obj$predicted_label <- rep(c("T cell", "B cell"), each = 5)
+#'
+#' obj <- NormalizeData(obj)
+#' obj <- FindVariableFeatures(obj)
+#' obj <- ScaleData(obj)
+#' obj <- RunPCA(obj)
+#'
+#' obj$entropy_norm <- runif(ncol(obj))
+#' obj$doublet_score <- runif(ncol(obj))
+#'
+#' markers <- list(
+#'   "T cell" = c("Gene1", "Gene2"),
+#'   "B cell" = c("Gene3", "Gene4")
+#' )
+#'
+#' obj <- cell_certify(obj, markers)
+#' }
 #'
 #' @export
 
 cell_certify <- function(
     object,
     markers,
-    label_column = "predicted_label"
+    label_column = "predicted_label",
+    moderate_threshold = 0.5,
+    high_threshold = 0.8
 ) {
 
   if (inherits(object, "Seurat")) {
@@ -128,7 +162,9 @@ cell_certify <- function(
 
   confidence_class <-
     classify_confidence(
-      confidence_score
+      confidence_score,
+      moderate_threshold = moderate_threshold,
+      high_threshold = high_threshold
     )
 
   if (inherits(object, "Seurat")) {

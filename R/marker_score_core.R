@@ -94,33 +94,57 @@ marker_score_core <- function(
 
       metadata <- object@meta.data
 
+      score_column <- paste0(
+        signature_name,
+        "_UCell"
+      )
+
+      idx <- which(labels == label)
+
+      scores[idx] <- metadata[
+        idx,
+        score_column
+      ]
+
     } else {
 
       object <- UCell::ScoreSignatures_UCell(
         object,
         features = feature_list,
-        assay = "logcounts"
+        assay = "logcounts",
+        ncores = 1
       )
 
-      metadata <- as.data.frame(
-        SummarizedExperiment::colData(object)
+      ucell <- SingleCellExperiment::altExp(
+        object,
+        "UCell"
       )
+
+      u_scores <-
+        SummarizedExperiment::assay(
+          ucell,
+          "UCell"
+        )
+
+      score_row <- paste0(
+        signature_name,
+        "_UCell"
+      )
+
+      idx <- which(labels == label)
+
+      if (score_row %in% rownames(u_scores)) {
+
+        scores[idx] <- as.numeric(
+          u_scores[
+            score_row,
+            idx
+          ]
+        )
+
+      }
 
     }
-
-    score_column <- paste0(
-      signature_name,
-      "_UCell"
-    )
-
-    idx <- which(
-      labels == label
-    )
-
-    scores[idx] <- metadata[
-      idx,
-      score_column
-    ]
 
   }
 

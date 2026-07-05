@@ -30,6 +30,26 @@ Numeric vector of neighborhood agreement scores.
 Computes local neighborhood agreement scores.
 }
 \examples{
-NULL
+\dontrun{
+library(Seurat)
+
+counts <- matrix(
+  rpois(200, lambda = 5),
+  nrow = 20
+)
+
+rownames(counts) <- paste0("Gene", 1:20)
+colnames(counts) <- paste0("Cell", 1:10)
+
+obj <- CreateSeuratObject(counts)
+obj$predicted_label <- rep(c("T cell", "B cell"), each = 5)
+
+obj <- NormalizeData(obj)
+obj <- FindVariableFeatures(obj)
+obj <- ScaleData(obj)
+obj <- RunPCA(obj)
+
+neighbor_score(obj)
+}
 
 }

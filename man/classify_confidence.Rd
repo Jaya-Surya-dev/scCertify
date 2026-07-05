@@ -4,13 +4,19 @@
 \alias{classify_confidence}
 \title{Classify Confidence Levels}
 \usage{
-classify_confidence(scores)
+classify_confidence(scores, moderate_threshold = 0.5, high_threshold = 0.8)
 }
 \arguments{
-\item{scores}{Numeric vector}
+\item{scores}{Numeric vector of confidence scores.}
+
+\item{moderate_threshold}{Lower threshold for the "Moderate"
+confidence class.}
+
+\item{high_threshold}{Lower threshold for the "High"
+confidence class.}
 }
 \value{
-Character vector
+Character vector of confidence classes.
 }
 \description{
 Converts confidence scores into
@@ -25,6 +31,12 @@ scores <- c(
 
 classify_confidence(
   scores
+)
+
+classify_confidence(
+  scores,
+  moderate_threshold = 0.4,
+  high_threshold = 0.75
 )
 
 }

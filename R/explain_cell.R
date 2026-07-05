@@ -9,7 +9,13 @@
 #' @return A character vector containing the interpretation.
 #'
 #' @examples
-#' NULL
+#' \dontrun{
+#' ## Assume 'object' has already been processed with cell_certify().
+#' explain_cell(
+#'   object,
+#'   cell_id = "Cell1"
+#' )
+#' }
 #'
 #' @export
 

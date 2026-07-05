@@ -10,7 +10,13 @@
 #' confidence score.
 #'
 #' @examples
-#' NULL
+#' \dontrun{
+#' ## Assume 'object' has already been processed with cell_certify().
+#' explain_confidence(
+#'   object,
+#'   cell_id = "Cell1"
+#' )
+#' }
 #'
 #' @export
 

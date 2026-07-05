@@ -1,10 +1,12 @@
 ---
-title: "scCertify Workflow"
-output: rmarkdown::html_vignette
+title: "scCertify: Explainable Confidence Scoring for Single-Cell Annotations"
+author: "Jaya Surya Doddetipalli"
+date: "`r Sys.Date()`"
+output: BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{scCertify Workflow}
+  %\VignetteIndexEntry{scCertify: Explainable Confidence Scoring for Single-Cell Annotations}
   %\VignetteEngine{knitr::rmarkdown}
-  \usepackage[utf8]{inputenc}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -14,209 +16,252 @@ knitr::opts_chunk$set(
 )
 ```
 
-Introduction
+# Introduction
 
-scCertify is an R package for explainable confidence scoring
-of single-cell RNA-seq annotations.
+Single-cell RNA sequencing (scRNA-seq) enables the identification of diverse cellular populations from complex biological samples. Numerous computational methods have been developed to assign cell-type labels to individual cells; however, most annotation methods provide little information regarding the reliability of each prediction.
 
-The framework integrates:
+**scCertify** complements existing annotation workflows by estimating confidence for predicted cell identities rather than performing annotation itself. The package combines multiple independent sources of evidence into a calibrated confidence score together with interpretable explanations.
 
-1.Marker enrichment scoring
+The confidence framework integrates four complementary components:
 
-2.Neighborhood agreement
+- Marker gene enrichment
+- Neighborhood agreement
+- Entropy-based uncertainty
+- Doublet information
 
-3.Entropy uncertainty
+The resulting confidence scores can be used to identify uncertain annotations, prioritize manual review, improve downstream analyses, and increase the transparency of automated annotation workflows.
 
-4.Doublet-aware confidence scoring
+# Installation
 
-5.Confidence calibration
+Install the development version using `BiocManager`.
 
-6.Explainable confidence attribution
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 
-Load Libraries
+BiocManager::install("scCertify")
+```
 
-```{r load-libraries}
+Load the package.
+
+```{r eval=FALSE}
 library(scCertify)
-
-library(Seurat)
-
-library(SingleR)
-
-library(celldex)
-
-library(UCell)
-
-library(scDblFinder)
-
-library(SingleCellExperiment)
 ```
 
-Load Example Dataset
+# Workflow Overview
 
-```{r load-data}
-data("pbmc_small")
+A typical scCertify workflow consists of:
 
-pbmc_small
+1. Predict cell identities using an external annotation method.
+2. Supply a marker gene database.
+3. Compute marker consistency scores.
+4. Measure neighborhood agreement.
+5. Estimate entropy-based uncertainty.
+6. Combine evidence into confidence scores.
+7. Interpret confidence using explanation utilities.
+
+The package supports both **Seurat** and **SingleCellExperiment** objects through a common interface.
+
+# Input Requirements
+
+The input object should already contain predicted cell labels.
+
+For Seurat objects:
+
+```{r eval=FALSE}
+head(object@meta.data)
 ```
 
-Preprocessing
+For SingleCellExperiment objects:
 
-```{r pre-processing}
-pbmc_small <- NormalizeData(
-  pbmc_small
-)
-
-pbmc_small <- FindVariableFeatures(
-  pbmc_small
-)
-
-pbmc_small <- ScaleData(
-  pbmc_small
-)
-
-pbmc_small <- RunPCA(
-  pbmc_small
-)
-
-pbmc_small <- RunUMAP(
-  pbmc_small,
-  dims = 1:10
-)
+```{r eval=FALSE}
+head(SummarizedExperiment::colData(object))
 ```
 
-Convert to SingleCellExperiment
+The metadata should include a column containing predicted labels (default: `predicted_label`).
 
-```{r convert-to-sce}
-sce <- as.SingleCellExperiment(
-  pbmc_small
-)
-```
+# Marker Database
 
-SingleR Annotation
+Marker genes are supplied as a named list.
 
-```{r SingleR-Annotation}
-ref <- HumanPrimaryCellAtlasData()
-
-pred <- SingleR(
-  test = sce,
-  ref = ref,
-  labels = ref$label.main
-)
-
-pbmc_small$predicted_label <-
-  pred$labels
-```
-
-Doublet Detection
-
-```{r Doublet-Detection}
-sce <- scDblFinder(
-  sce
-)
-
-pbmc_small$doublet_score <-
-  colData(sce)$scDblFinder.score
-
-pbmc_small$doublet_class <-
-  colData(sce)$scDblFinder.class
-```
-
-Marker Database
-
-```{r Marker-Database}
+```{r eval=FALSE}
 markers <- list(
-  "B_cell" = c(
-    "MS4A1",
-    "CD79A"
-  ),
-  "T_cells" = c(
-    "CD3D",
-    "IL7R"
-  ),
-  "Monocyte" = c(
-    "LYZ",
-    "S100A8"
-  ),
-  "NK_cell" = c(
-    "NKG7",
-    "GNLY"
-  ),
-  "DC" = c(
-    "FCER1A",
-    "CST3"
-  )
+    "T cell" = c("CD3D","CD3E","TRBC1"),
+    "B cell" = c("MS4A1","CD79A","CD79B"),
+    "Monocyte" = c("LYZ","S100A8","S100A9")
 )
 ```
 
-Entropy Calculation
+# Marker Consistency Score
 
-```{r Calculate-Entropy}
-pbmc_small$entropy_score <-
-  entropy_score(
-    pred$scores
-  )
+Marker consistency evaluates whether a cell expresses genes expected for its predicted identity. scCertify uses the UCell algorithm to compute robust rank-based enrichment scores.
 
-pbmc_small$entropy_norm <- (
-  pbmc_small$entropy_score -
-
-    min(pbmc_small$entropy_score)
-) / (
-  max(pbmc_small$entropy_score) -
-
-    min(pbmc_small$entropy_score)
+```{r eval=FALSE}
+marker_scores <- marker_score(
+    object,
+    markers
 )
 ```
 
-Run scCertify
+Higher scores indicate stronger molecular support for the assigned annotation.
 
-```{r Run-package}
-pbmc_small <- cell_certify(
-  pbmc_small,
-  markers
+# Neighborhood Agreement Score
+
+Correctly annotated cells generally occur near cells of the same identity in low-dimensional space.
+
+```{r eval=FALSE}
+neighbor_scores <- neighbor_score(
+    object
 )
 ```
 
-Confidence Classes
+Neighborhood agreement ranges from 0 to 1, where larger values indicate greater agreement with nearby cells.
 
-```{r Confidence-classes}
-table(
-  pbmc_small$confidence_class
+# Entropy-Based Uncertainty
+
+Entropy provides a quantitative measure of annotation uncertainty.
+
+```{r eval=FALSE}
+object <- entropy_score(
+    object
 )
 ```
 
-Confidence Score Visualization
+Low entropy indicates confident predictions, whereas high entropy suggests ambiguous assignments.
 
-```{r CS-visualization}
-FeaturePlot(
-  pbmc_small,
-  features = "confidence_score"
+# Computing Confidence Scores
+
+The final confidence score integrates all available evidence.
+
+The default weighting scheme is:
+
+| Component | Weight |
+|:----------|------:|
+| Marker enrichment | 35% |
+| Neighborhood agreement | 35% |
+| Entropy | 20% |
+| Doublet penalty | 10% |
+
+```{r eval=FALSE}
+object <- cell_certify(
+    object,
+    markers
 )
 ```
 
-Confidence Class Visualization
+The resulting metadata include:
 
-```{r CC-Visualization}
-DimPlot(
-  pbmc_small,
-  group.by = "confidence_class"
+- marker_score
+- neighbor_score
+- confidence_score
+- confidence_class
+
+For Seurat objects:
+
+```{r eval=FALSE}
+head(
+    object@meta.data[
+        ,
+        c(
+            "marker_score",
+            "neighbor_score",
+            "confidence_score",
+            "confidence_class"
+        )
+    ]
 )
 ```
 
-Explain Confidence Attribution
+For SingleCellExperiment objects:
 
-```{r ECA}
-cell_id <- colnames(
-  pbmc_small
-)[1]
+```{r eval=FALSE}
+head(
+    SummarizedExperiment::colData(object)
+)
+```
 
+# Custom Confidence Thresholds
+
+Confidence classes can be customized.
+
+```{r eval=FALSE}
+object <- cell_certify(
+    object,
+    markers,
+    moderate_threshold = 0.4,
+    high_threshold = 0.75
+)
+```
+
+# Explaining Confidence
+
+Individual cells can be inspected using:
+
+```{r eval=FALSE}
+explain_cell(
+    object,
+    cell_id = "Cell1"
+)
+```
+
+To understand the major contributors to a confidence score:
+
+```{r eval=FALSE}
 explain_confidence(
-  pbmc_small,
-  cell_id
+    object,
+    cell_id = "Cell1"
 )
 ```
 
-Session Information
+Possible explanations include:
 
-```{r Session-info}
+- Weak marker enrichment
+- Neighborhood disagreement
+- High entropy
+- Possible doublet contamination
+
+# Interpreting Results
+
+High-confidence annotations generally exhibit:
+
+- Strong marker enrichment
+- Strong neighborhood agreement
+- Low entropy
+- Low doublet scores
+
+Low-confidence annotations frequently correspond to:
+
+- Ambiguous transcriptional states
+- Rare cell populations
+- Doublets
+- Poor-quality cells
+- Incorrect annotations
+
+These cells may benefit from manual inspection before downstream analyses.
+
+# Compatibility
+
+scCertify supports both:
+
+- Seurat
+- SingleCellExperiment
+
+allowing integration into CRAN- and Bioconductor-based workflows.
+
+# Summary
+
+scCertify provides an explainable confidence scoring framework for single-cell annotation. By combining marker enrichment, neighborhood agreement, entropy, and doublet information, it quantifies annotation reliability while providing interpretable explanations for each confidence assignment.
+
+The package is intended to complement existing annotation pipelines and assist with quality control, annotation refinement, downstream filtering, and biological interpretation.
+
+# References
+
+- Andreatta M, Carmona SJ (2021). *UCell: Robust and scalable single-cell gene signature scoring*. Computational and Structural Biotechnology Journal.
+
+- Aran D, Looney AP, Liu L, et al. (2019). *Reference-based analysis of lung single-cell sequencing reveals a transitional profibrotic macrophage*. Nature Immunology.
+
+# Session Information
+
+```{r session-info}
 sessionInfo()
 ```

@@ -1,6 +1,6 @@
 Package: scCertify
 Title: Explainable Confidence Scoring for Single-Cell Annotations
-Version: 0.99.1
+Version: 0.99.2
 Authors@R:
     person(
       "Jaya Surya",
@@ -30,12 +30,14 @@ Imports:
     entropy,
     UCell
 Suggests:
+    BiocStyle,
     SingleR,
     celldex,
     ggplot2,
     knitr,
     rmarkdown,
     scDblFinder,
+    SeuratObject,
     testthat (>= 3.0.0)
 biocViews:
     Software,

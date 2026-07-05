@@ -4,7 +4,13 @@
 \alias{cell_certify}
 \title{Cell Annotation Confidence}
 \usage{
-cell_certify(object, markers, label_column = "predicted_label")
+cell_certify(
+  object,
+  markers,
+  label_column = "predicted_label",
+  moderate_threshold = 0.5,
+  high_threshold = 0.8
+)
 }
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment object.}
@@ -12,6 +18,12 @@ cell_certify(object, markers, label_column = "predicted_label")
 \item{markers}{Named list of marker genes.}
 
 \item{label_column}{Metadata column containing predicted labels.}
+
+\item{moderate_threshold}{Lower threshold for the "Moderate"
+confidence class.}
+
+\item{high_threshold}{Lower threshold for the "High"
+confidence class.}
 }
 \value{
 The input object with confidence scores and classifications
@@ -23,6 +35,34 @@ enrichment, neighborhood agreement, entropy-based uncertainty,
 and doublet information.
 }
 \examples{
-NULL
+\dontrun{
+library(Seurat)
+
+counts <- matrix(
+  rpois(200, lambda = 5),
+  nrow = 20
+)
+
+rownames(counts) <- paste0("Gene", 1:20)
+colnames(counts) <- paste0("Cell", 1:10)
+
+obj <- CreateSeuratObject(counts)
+obj$predicted_label <- rep(c("T cell", "B cell"), each = 5)
+
+obj <- NormalizeData(obj)
+obj <- FindVariableFeatures(obj)
+obj <- ScaleData(obj)
+obj <- RunPCA(obj)
+
+obj$entropy_norm <- runif(ncol(obj))
+obj$doublet_score <- runif(ncol(obj))
+
+markers <- list(
+  "T cell" = c("Gene1", "Gene2"),
+  "B cell" = c("Gene3", "Gene4")
+)
+
+obj <- cell_certify(obj, markers)
+}
 
 }

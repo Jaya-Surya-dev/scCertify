@@ -1,17 +1,28 @@
-# scCertify 0.99.1
+# scCertify 0.99.2
 
-## New Features
+## Changes in response to Bioconductor review
 
-- Added explainable confidence scoring framework
-- Added entropy-based uncertainty estimation
-- Added ontology-aware label matching
-- Added UCell-based marker enrichment scoring
-- Added neighborhood agreement scoring
-- Added doublet-aware confidence modeling
-- Added confidence calibration
-- Added confidence classification
-- Added explainable confidence attribution
-- Added vignette workflow documentation
-- Added Bioconductor compatibility improvements
-- Improved vignette formatting
-- Minor documentation updates
+### New features
+
+* Added support for both Seurat and SingleCellExperiment objects across the package.
+* Expanded unit test coverage for exported functions.
+* Added package-level documentation (`?scCertify`).
+* Added executable examples for exported functions.
+* Expanded the vignette with an introduction, workflow overview, methodology, and interpretation of confidence scores.
+* Improved compatibility with Bioconductor documentation standards.
+* Updated README installation instructions.
+* Improved documentation throughout the package.
+
+### Bug fixes
+
+* Improved handling of metadata for both supported object classes.
+* Improved dimensionality reduction handling for SingleCellExperiment objects.
+* Improved marker score computation for SingleCellExperiment inputs.
+* Improved neighborhood agreement compatibility across supported object types.
+
+### Documentation
+
+* Updated function documentation for Seurat and SingleCellExperiment compatibility.
+* Added additional usage examples.
+* Revised vignette formatting using BiocStyle.
+

@@ -83,36 +83,44 @@ Single-cell RNA-seq Data
 
 # Installation
 
-## Install Dependencies
+**scCertify** is currently under review for inclusion in the Bioconductor project. Until it becomes available through Bioconductor, the development version can be installed from GitHub.
 
-```r id="h72d9s"
-install.packages(c(
-  "Seurat",
-  "ggplot2",
-  "FNN",
-  "entropy",
-  "devtools"
-))
+## Install dependencies
 
-install.packages("BiocManager")
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
 
 BiocManager::install(c(
-  "SingleR",
-  "celldex",
-  "SingleCellExperiment",
-  "UCell",
-  "scDblFinder"
+    "SingleCellExperiment",
+    "SummarizedExperiment",
+    "SingleR",
+    "celldex",
+    "UCell",
+    "scDblFinder"
+))
+
+install.packages(c(
+    "Seurat",
+    "FNN",
+    "entropy",
+    "ggplot2",
+    "remotes"
 ))
 ```
 
----
-
 ## Install scCertify
 
-```r id="u93d8x"
-devtools::install_github(
-  "Jaya-Surya-dev/scCertify"
+```r
+remotes::install_github(
+    "Jaya-Surya-dev/scCertify"
 )
+```
+
+Once **scCertify** is accepted into Bioconductor, it can be installed using:
+
+```r
+BiocManager::install("scCertify")
 ```
 
 ---
