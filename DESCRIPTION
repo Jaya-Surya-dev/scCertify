@@ -12,10 +12,12 @@ Authors@R:
       )
     )
 Description: 
-    cellCertR provides an explainable confidence scoring framework
-    for single-cell RNA sequencing annotations using marker enrichment,
+    scCertify provides an explainable framework for assessing the
+    confidence of cell-type annotations in single-cell RNA sequencing
+    data. Confidence scores are computed using marker enrichment,
     neighborhood agreement, entropy-based uncertainty estimation,
-    and ontology-aware label matching.
+    and ontology-aware label matching to support transparent
+    interpretation of annotation quality.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
