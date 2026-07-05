@@ -1,15 +1,14 @@
 #' Neighbor Agreement Score
 #'
-#' Computes local neighborhood
-#' agreement scores.
+#' Computes local neighborhood agreement scores.
 #'
-#' @param object Seurat object
-#' @param reduction Reduction method
-#' @param dims PCA dimensions
-#' @param k Number of neighbors
-#' @param label_column Metadata label column
+#' @param object A Seurat or SingleCellExperiment object.
+#' @param reduction Dimensionality reduction to use.
+#' @param dims Dimensions to include.
+#' @param k Number of nearest neighbors.
+#' @param label_column Metadata column containing predicted labels.
 #'
-#' @return Numeric vector
+#' @return Numeric vector of neighborhood agreement scores.
 #'
 #' @examples
 #' NULL
@@ -17,64 +16,46 @@
 #' @export
 
 neighbor_score <- function(
-  object,
-  reduction = "pca",
-  dims = NULL,
-  k = 10,
-  label_column = "predicted_label"
-) {
-  embeddings <- Seurat::Embeddings(
     object,
-    reduction
-  )
+    reduction = "pca",
+    dims = NULL,
+    k = 10,
+    label_column = "predicted_label"
+) {
 
-  # Automatically determine dimensions
-  if (is.null(dims)) {
-    max_dims <- ncol(
-      embeddings
-    )
+  if (inherits(object, "Seurat")) {
 
-    dims <- seq_len(
-      min(
-        10,
-        max_dims
+    return(
+      neighbor_score_core(
+        object = object,
+        reduction = reduction,
+        dims = dims,
+        k = k,
+        label_column = label_column,
+        object_type = "Seurat"
       )
     )
+
   }
 
-  embeddings <- embeddings[
-    ,
-    dims,
-    drop = FALSE
-  ]
+  if (inherits(object, "SingleCellExperiment")) {
 
-  nn <- FNN::get.knn(
-    embeddings,
-    k = min(
-      k,
-      nrow(embeddings) - 1
+    return(
+      neighbor_score_core(
+        object = object,
+        reduction = reduction,
+        dims = dims,
+        k = k,
+        label_column = label_column,
+        object_type = "SingleCellExperiment"
+      )
     )
-  )
 
-  labels <- object@meta.data[
-    ,
-    label_column
-  ]
-
-  scores <- numeric(
-    length(labels)
-  )
-
-  for (i in seq_along(labels)) {
-    neighbor_labels <- labels[
-      nn$nn.index[i, ]
-    ]
-
-    scores[i] <- mean(
-      neighbor_labels ==
-        labels[i]
-    )
   }
 
-  return(scores)
+  stop(
+    "'object' must be a Seurat or SingleCellExperiment object.",
+    call. = FALSE
+  )
+
 }

@@ -7,17 +7,20 @@
 cell_certify(object, markers, label_column = "predicted_label")
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{A Seurat or SingleCellExperiment object.}
 
-\item{markers}{Named marker list}
+\item{markers}{Named list of marker genes.}
 
-\item{label_column}{Metadata label column}
+\item{label_column}{Metadata column containing predicted labels.}
 }
 \value{
-Seurat object
+The input object with confidence scores and classifications
+added to the metadata.
 }
 \description{
-Main confidence scoring framework.
+Computes confidence scores for cell-type annotations using marker
+enrichment, neighborhood agreement, entropy-based uncertainty,
+and doublet information.
 }
 \examples{
 NULL

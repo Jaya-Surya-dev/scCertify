@@ -7,12 +7,13 @@
 explain_confidence(object, cell_id)
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{A Seurat or SingleCellExperiment object.}
 
-\item{cell_id}{Cell barcode}
+\item{cell_id}{Cell barcode.}
 }
 \value{
-Character vector
+Character vector describing the factors contributing to the
+confidence score.
 }
 \description{
 Explains why a cell received

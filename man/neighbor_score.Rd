@@ -13,22 +13,21 @@ neighbor_score(
 )
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{A Seurat or SingleCellExperiment object.}
 
-\item{reduction}{Reduction method}
+\item{reduction}{Dimensionality reduction to use.}
 
-\item{dims}{PCA dimensions}
+\item{dims}{Dimensions to include.}
 
-\item{k}{Number of neighbors}
+\item{k}{Number of nearest neighbors.}
 
-\item{label_column}{Metadata label column}
+\item{label_column}{Metadata column containing predicted labels.}
 }
 \value{
-Numeric vector
+Numeric vector of neighborhood agreement scores.
 }
 \description{
-Computes local neighborhood
-agreement scores.
+Computes local neighborhood agreement scores.
 }
 \examples{
 NULL

@@ -7,16 +7,16 @@
 explain_cell(object, cell_id)
 }
 \arguments{
-\item{object}{Seurat object}
+\item{object}{A Seurat or SingleCellExperiment object.}
 
-\item{cell_id}{Cell barcode}
+\item{cell_id}{Cell barcode or column name.}
 }
 \value{
-Character vector
+A character vector containing the interpretation.
 }
 \description{
-Provides interpretable explanation
-for confidence scores.
+Provides an interpretable explanation for the confidence score
+assigned to an individual cell.
 }
 \examples{
 NULL

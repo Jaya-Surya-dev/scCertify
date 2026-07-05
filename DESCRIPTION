@@ -24,13 +24,14 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
 Imports:
     Seurat,
+    SingleCellExperiment,
+    SummarizedExperiment,
     FNN,
     entropy,
     UCell
 Suggests:
     SingleR,
     celldex,
-    SingleCellExperiment,
     ggplot2,
     knitr,
     rmarkdown,

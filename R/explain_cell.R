@@ -1,12 +1,12 @@
 #' Explain Cell Annotation Confidence
 #'
-#' Provides interpretable explanation
-#' for confidence scores.
+#' Provides an interpretable explanation for the confidence score
+#' assigned to an individual cell.
 #'
-#' @param object Seurat object
-#' @param cell_id Cell barcode
+#' @param object A Seurat or SingleCellExperiment object.
+#' @param cell_id Cell barcode or column name.
 #'
-#' @return Character vector
+#' @return A character vector containing the interpretation.
 #'
 #' @examples
 #' NULL
@@ -14,19 +14,48 @@
 #' @export
 
 explain_cell <- function(
-  object,
-  cell_id
+    object,
+    cell_id
 ) {
-  meta <- object@meta.data[
-    cell_id, ,
+
+  if (inherits(object, "Seurat")) {
+
+    meta <- object@meta.data
+
+  } else if (inherits(object, "SingleCellExperiment")) {
+
+    meta <- as.data.frame(
+      SummarizedExperiment::colData(object)
+    )
+
+  } else {
+
+    stop(
+      "'object' must be a Seurat or SingleCellExperiment object.",
+      call. = FALSE
+    )
+
+  }
+
+  if (!cell_id %in% rownames(meta)) {
+
+    stop(
+      sprintf(
+        "Cell '%s' not found.",
+        cell_id
+      ),
+      call. = FALSE
+    )
+
+  }
+
+  meta <- meta[
+    cell_id,
+    ,
     drop = FALSE
   ]
 
-  message(
-    "Cell: ",
-    cell_id,
-    "\n"
-  )
+  message("Cell: ", cell_id, "\n")
 
   message(
     "Predicted Label: ",
@@ -66,72 +95,66 @@ explain_cell <- function(
     "\n"
   )
 
-  interpretation <- c()
+  interpretation <- character()
 
-  if (
-    meta$confidence_score < 0.4
-  ) {
+  if (meta$confidence_score < 0.4) {
+
     interpretation <- c(
       interpretation,
       "Low confidence annotation"
     )
-  } else if (
-    meta$confidence_score < 0.7
-  ) {
+
+  } else if (meta$confidence_score < 0.7) {
+
     interpretation <- c(
       interpretation,
       "Moderate confidence annotation"
     )
+
   } else {
+
     interpretation <- c(
       interpretation,
       "High confidence annotation"
     )
+
   }
 
-  if (
-    meta$entropy_norm > 0.7
-  ) {
+  if (meta$entropy_norm > 0.7) {
+
     interpretation <- c(
       interpretation,
       "High uncertainty detected"
     )
+
   }
 
-  if (
-    meta$neighbor_score < 0.5
-  ) {
+  if (meta$neighbor_score < 0.5) {
+
     interpretation <- c(
       interpretation,
       "Local neighborhood disagreement"
     )
+
   }
 
-  if (
-    meta$marker_score < 0.2
-  ) {
+  if (meta$marker_score < 0.2) {
+
     interpretation <- c(
       interpretation,
       "Weak marker support"
     )
+
   }
 
-  message(
-    "Interpretation:"
-  )
+  message("Interpretation:")
 
-  for (
-    i in seq_along(
-      interpretation
-    )
-  ) {
-    message(
-      "- ",
-      interpretation[i]
-    )
+  for (msg in interpretation) {
+
+    message("- ", msg)
+
   }
 
-  return(
-    interpretation
-  )
+  interpretation
+
 }
