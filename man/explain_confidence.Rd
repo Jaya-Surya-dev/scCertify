@@ -20,12 +20,33 @@ Explains why a cell received
 its confidence score.
 }
 \examples{
-\dontrun{
-## Assume 'object' has already been processed with cell_certify().
-explain_confidence(
-  object,
-  cell_id = "Cell1"
-)
+if (requireNamespace("Seurat", quietly = TRUE)) {
+  counts <- matrix(
+    rpois(200, lambda = 5),
+    nrow = 20
+  )
+
+  rownames(counts) <- paste0("Gene", seq_len(20))
+  colnames(counts) <- paste0("Cell", seq_len(10))
+
+  obj <- Seurat::CreateSeuratObject(
+    counts = counts
+  )
+
+  obj$predicted_label <- rep(
+    c("T cell", "B cell"),
+    each = 5
+  )
+
+  obj$marker_score <- runif(ncol(obj))
+  obj$neighbor_score <- runif(ncol(obj))
+  obj$entropy_norm <- runif(ncol(obj))
+  obj$doublet_score <- runif(ncol(obj))
+
+  explain_confidence(
+    obj,
+    cell_id = "Cell1"
+  )
 }
 
 }

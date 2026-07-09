@@ -1,4 +1,4 @@
-# scCertify 0.99.2
+# scCertify 0.99.3
 
 ## Changes in response to Bioconductor review
 
@@ -19,6 +19,9 @@
 * Improved dimensionality reduction handling for SingleCellExperiment objects.
 * Improved marker score computation for SingleCellExperiment inputs.
 * Improved neighborhood agreement compatibility across supported object types.
+* Improved runnable examples in package documentation.
+* Updated vignette formatting and chunk labels.
+* Addressed Bioconductor documentation review feedback.
 
 ### Documentation
 

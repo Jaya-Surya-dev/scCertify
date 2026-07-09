@@ -35,7 +35,7 @@ The resulting confidence scores can be used to identify uncertain annotations, p
 
 Install the development version using `BiocManager`.
 
-```{r eval=FALSE}
+```{r install, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
@@ -44,7 +44,7 @@ BiocManager::install("scCertify")
 
 Load the package.
 
-```{r eval=FALSE}
+```{r load-package}
 library(scCertify)
 ```
 
@@ -68,14 +68,20 @@ The input object should already contain predicted cell labels.
 
 For Seurat objects:
 
-```{r eval=FALSE}
+```{r seurat-metadata, eval=FALSE}
 head(object@meta.data)
 ```
 
 For SingleCellExperiment objects:
 
-```{r eval=FALSE}
-head(SummarizedExperiment::colData(object))
+```{r marker-list}
+markers <- list(
+  "T cell" = c("CD3D", "CD3E", "TRBC1"),
+  "B cell" = c("MS4A1", "CD79A", "CD79B"),
+  "Monocyte" = c("LYZ", "S100A8", "S100A9")
+)
+
+markers
 ```
 
 The metadata should include a column containing predicted labels (default: `predicted_label`).
@@ -84,7 +90,7 @@ The metadata should include a column containing predicted labels (default: `pred
 
 Marker genes are supplied as a named list.
 
-```{r eval=FALSE}
+```{r marker-database, eval=FALSE}
 markers <- list(
     "T cell" = c("CD3D","CD3E","TRBC1"),
     "B cell" = c("MS4A1","CD79A","CD79B"),
@@ -96,7 +102,7 @@ markers <- list(
 
 Marker consistency evaluates whether a cell expresses genes expected for its predicted identity. scCertify uses the UCell algorithm to compute robust rank-based enrichment scores.
 
-```{r eval=FALSE}
+```{r marker-score, eval=FALSE}
 marker_scores <- marker_score(
     object,
     markers
@@ -109,7 +115,7 @@ Higher scores indicate stronger molecular support for the assigned annotation.
 
 Correctly annotated cells generally occur near cells of the same identity in low-dimensional space.
 
-```{r eval=FALSE}
+```{r neighbor-score, eval=FALSE}
 neighbor_scores <- neighbor_score(
     object
 )
@@ -121,7 +127,7 @@ Neighborhood agreement ranges from 0 to 1, where larger values indicate greater 
 
 Entropy provides a quantitative measure of annotation uncertainty.
 
-```{r eval=FALSE}
+```{r entropy-score, eval=FALSE}
 object <- entropy_score(
     object
 )
@@ -142,10 +148,12 @@ The default weighting scheme is:
 | Entropy | 20% |
 | Doublet penalty | 10% |
 
-```{r eval=FALSE}
-object <- cell_certify(
-    object,
-    markers
+```{r confidence-classification}
+scores <- c(0.15, 0.55, 0.92)
+
+data.frame(
+    score = scores,
+    class = classify_confidence(scores)
 )
 ```
 
@@ -158,23 +166,15 @@ The resulting metadata include:
 
 For Seurat objects:
 
-```{r eval=FALSE}
-head(
-    object@meta.data[
-        ,
-        c(
-            "marker_score",
-            "neighbor_score",
-            "confidence_score",
-            "confidence_class"
-        )
-    ]
-)
+```{r classify-confidence}
+scores <- c(0.2, 0.6, 0.9)
+
+classify_confidence(scores)
 ```
 
 For SingleCellExperiment objects:
 
-```{r eval=FALSE}
+```{r sce-metadata, eval=FALSE}
 head(
     SummarizedExperiment::colData(object)
 )
@@ -184,7 +184,7 @@ head(
 
 Confidence classes can be customized.
 
-```{r eval=FALSE}
+```{r custom-thresholds, eval=FALSE}
 object <- cell_certify(
     object,
     markers,
@@ -197,16 +197,20 @@ object <- cell_certify(
 
 Individual cells can be inspected using:
 
-```{r eval=FALSE}
-explain_cell(
-    object,
-    cell_id = "Cell1"
+```{r helper-functions}
+calibrate_confidence(
+  c(-1, 0, 1)
+)
+
+match_labels(
+  "T_cells",
+  c("T_cell", "B_cell")
 )
 ```
 
 To understand the major contributors to a confidence score:
 
-```{r eval=FALSE}
+```{r explain-confidence, eval=FALSE}
 explain_confidence(
     object,
     cell_id = "Cell1"

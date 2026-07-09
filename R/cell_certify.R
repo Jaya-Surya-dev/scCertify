@@ -16,34 +16,60 @@
 #' added to the metadata.
 #'
 #' @examples
-#' \dontrun{
-#' library(Seurat)
+#' if (requireNamespace("Seurat", quietly = TRUE)) {
+#'   counts <- matrix(
+#'     rpois(1000, lambda = 5),
+#'     nrow = 50,
+#'     ncol = 20
+#'   )
 #'
-#' counts <- matrix(
-#'   rpois(200, lambda = 5),
-#'   nrow = 20
-#' )
+#'   rownames(counts) <- paste0("Gene", seq_len(50))
+#'   colnames(counts) <- paste0("Cell", seq_len(20))
 #'
-#' rownames(counts) <- paste0("Gene", 1:20)
-#' colnames(counts) <- paste0("Cell", 1:10)
+#'   obj <- Seurat::CreateSeuratObject(
+#'     counts = counts
+#'   )
 #'
-#' obj <- CreateSeuratObject(counts)
-#' obj$predicted_label <- rep(c("T cell", "B cell"), each = 5)
+#'   obj$predicted_label <- rep(
+#'     c("T cell", "B cell"),
+#'     each = 10
+#'   )
 #'
-#' obj <- NormalizeData(obj)
-#' obj <- FindVariableFeatures(obj)
-#' obj <- ScaleData(obj)
-#' obj <- RunPCA(obj)
+#'   obj <- Seurat::NormalizeData(
+#'     obj,
+#'     verbose = FALSE
+#'   )
 #'
-#' obj$entropy_norm <- runif(ncol(obj))
-#' obj$doublet_score <- runif(ncol(obj))
+#'   obj <- Seurat::FindVariableFeatures(
+#'     obj,
+#'     verbose = FALSE
+#'   )
 #'
-#' markers <- list(
-#'   "T cell" = c("Gene1", "Gene2"),
-#'   "B cell" = c("Gene3", "Gene4")
-#' )
+#'   obj <- Seurat::ScaleData(
+#'     obj,
+#'     verbose = FALSE
+#'   )
 #'
-#' obj <- cell_certify(obj, markers)
+#'   obj <- Seurat::RunPCA(
+#'     obj,
+#'     npcs = 10,
+#'     verbose = FALSE
+#'   )
+#'
+#'   obj$entropy_norm <- runif(ncol(obj))
+#'   obj$doublet_score <- runif(ncol(obj))
+#'
+#'   markers <- list(
+#'     "T cell" = c("Gene1", "Gene2"),
+#'     "B cell" = c("Gene3", "Gene4")
+#'   )
+#'
+#'   obj <- cell_certify(
+#'     obj,
+#'     markers
+#'   )
+#'
+#'   head(obj$confidence_score)
 #' }
 #'
 #' @export
