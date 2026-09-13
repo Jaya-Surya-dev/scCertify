@@ -35,4 +35,11 @@ be T cells.
 
 The function returns one UCell score per cell. Scores are not
 incorporated into the main confidence score by default.
+
+If a predicted label has no corresponding negative marker set,
+or none of the supplied negative marker genes are present in the
+object, a score of zero is returned for those cells. A zero score
+therefore indicates that no measurable negative-marker signal
+was obtained and should not be interpreted as biological evidence
+supporting the predicted identity.
 }

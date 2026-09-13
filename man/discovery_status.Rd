@@ -16,9 +16,11 @@ discovery_status(
 
 \item{negative_marker_score}{Numeric vector of negative marker scores.}
 
-\item{positive_threshold}{Threshold for strong positive evidence.}
+\item{positive_threshold}{Threshold for strong positive evidence.
+Must be a single numeric value between 0 and 1.}
 
-\item{negative_threshold}{Threshold for strong contradictory evidence.}
+\item{negative_threshold}{Threshold for strong contradictory evidence.
+Must be a single numeric value between 0 and 1.}
 }
 \value{
 Character vector containing one discovery-aware status per cell.

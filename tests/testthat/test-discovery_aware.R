@@ -1,7 +1,6 @@
 test_that(
   "discovery_aware returns results for SingleCellExperiment",
   {
-
     result <- discovery_aware(
       object = toy_sce,
       markers = toy_markers,
@@ -26,6 +25,21 @@ test_that(
         ) %in% colnames(result)
       )
     )
+
+    expect_type(
+      result$positive_marker_score,
+      "double"
+    )
+
+    expect_type(
+      result$negative_marker_score,
+      "double"
+    )
+
+    expect_type(
+      result$discovery_status,
+      "character"
+    )
   }
 )
 
@@ -33,7 +47,6 @@ test_that(
 test_that(
   "discovery_aware returns results for Seurat",
   {
-
     result <- discovery_aware(
       object = toy_seurat,
       markers = toy_markers,
@@ -58,6 +71,21 @@ test_that(
         ) %in% colnames(result)
       )
     )
+
+    expect_type(
+      result$positive_marker_score,
+      "double"
+    )
+
+    expect_type(
+      result$negative_marker_score,
+      "double"
+    )
+
+    expect_type(
+      result$discovery_status,
+      "character"
+    )
   }
 )
 
@@ -65,7 +93,6 @@ test_that(
 test_that(
   "discovery_aware preserves cell names",
   {
-
     result <- discovery_aware(
       object = toy_sce,
       markers = toy_markers,
@@ -83,7 +110,6 @@ test_that(
 test_that(
   "discovery_aware accepts custom thresholds",
   {
-
     result <- discovery_aware(
       object = toy_sce,
       markers = toy_markers,
@@ -99,6 +125,29 @@ test_that(
     expect_equal(
       nrow(result),
       ncol(toy_sce)
+    )
+  }
+)
+
+
+test_that(
+  "discovery_aware returns valid discovery statuses",
+  {
+    result <- discovery_aware(
+      object = toy_sce,
+      markers = toy_markers,
+      negative_markers = toy_negative_markers
+    )
+
+    expect_true(
+      all(
+        result$discovery_status %in% c(
+          "Known",
+          "Possible novel state",
+          "Possible transitional state",
+          "Insufficient evidence"
+        )
+      )
     )
   }
 )

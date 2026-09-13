@@ -2,7 +2,7 @@
 % Please edit documentation in R/de_novo_signatures.R
 \name{de_novo_signatures}
 \alias{de_novo_signatures}
-\title{De Novo Cluster Gene Signatures}
+\title{Cluster-Enriched Gene Signatures}
 \usage{
 de_novo_signatures(object, cluster_column, top_n = 10)
 }
@@ -11,19 +11,23 @@ de_novo_signatures(object, cluster_column, top_n = 10)
 
 \item{cluster_column}{Metadata column containing cluster identities.}
 
-\item{top_n}{Number of top genes to return for each cluster.}
+\item{top_n}{Number of top enriched genes to return for each cluster.}
 }
 \value{
-Named list containing the top genes for each cluster.
+Named list containing the top cluster-enriched genes
+for each cluster.
 }
 \description{
 Identifies genes that are relatively enriched within each
 user-specified cluster.
 }
 \details{
-This function provides a simple discovery-aware approach by
-identifying genes enriched within existing clusters. It does not
-perform clustering and does not assign biological identities.
-The resulting signatures can be used to investigate unusual,
-heterogeneous, or potentially novel cell states.
+This function provides an exploratory, discovery-aware approach
+by identifying genes that are relatively enriched within existing
+clusters compared with the remaining cells.
+
+The function does not perform clustering, differential expression
+testing, or biological cell-type annotation. The resulting
+cluster-enriched gene sets can be used to investigate
+heterogeneous, unusual, or potentially novel cell states.
 }

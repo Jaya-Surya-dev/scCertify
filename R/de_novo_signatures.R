@@ -1,20 +1,24 @@
-#' De Novo Cluster Gene Signatures
+#' Cluster-Enriched Gene Signatures
 #'
 #' Identifies genes that are relatively enriched within each
 #' user-specified cluster.
 #'
 #' @param object A Seurat or SingleCellExperiment object.
 #' @param cluster_column Metadata column containing cluster identities.
-#' @param top_n Number of top genes to return for each cluster.
+#' @param top_n Number of top enriched genes to return for each cluster.
 #'
-#' @return Named list containing the top genes for each cluster.
+#' @return Named list containing the top cluster-enriched genes
+#' for each cluster.
 #'
 #' @details
-#' This function provides a simple discovery-aware approach by
-#' identifying genes enriched within existing clusters. It does not
-#' perform clustering and does not assign biological identities.
-#' The resulting signatures can be used to investigate unusual,
-#' heterogeneous, or potentially novel cell states.
+#' This function provides an exploratory, discovery-aware approach
+#' by identifying genes that are relatively enriched within existing
+#' clusters compared with the remaining cells.
+#'
+#' The function does not perform clustering, differential expression
+#' testing, or biological cell-type annotation. The resulting
+#' cluster-enriched gene sets can be used to investigate
+#' heterogeneous, unusual, or potentially novel cell states.
 #'
 #' @export
 
@@ -104,10 +108,32 @@ de_novo_signatures <- function(
 
   } else {
 
-    SummarizedExperiment::assay(
-      object,
-      "logcounts"
+    available_assays <- SummarizedExperiment::assayNames(
+      object
     )
+
+    if ("logcounts" %in% available_assays) {
+
+      SummarizedExperiment::assay(
+        object,
+        "logcounts"
+      )
+
+    } else if ("counts" %in% available_assays) {
+
+      SummarizedExperiment::assay(
+        object,
+        "counts"
+      )
+
+    } else {
+
+      stop(
+        "The SingleCellExperiment object must contain a ",
+        "'logcounts' or 'counts' assay.",
+        call. = FALSE
+      )
+    }
   }
 
   gene_names <- rownames(expression_data)

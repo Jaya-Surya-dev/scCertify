@@ -21,26 +21,26 @@
 #' The function returns one UCell score per cell. Scores are not
 #' incorporated into the main confidence score by default.
 #'
+#' If a predicted label has no corresponding negative marker set,
+#' or none of the supplied negative marker genes are present in the
+#' object, a score of zero is returned for those cells. A zero score
+#' therefore indicates that no measurable negative-marker signal
+#' was obtained and should not be interpreted as biological evidence
+#' supporting the predicted identity.
+#'
 #' @export
-
 negative_marker_score <- function(
-  object,
-  negative_markers,
-  label_column = "predicted_label"
+    object,
+    negative_markers,
+    label_column = "predicted_label"
 ) {
-
   if (inherits(object, "Seurat")) {
-
     metadata <- object@meta.data
-
   } else if (inherits(object, "SingleCellExperiment")) {
-
     metadata <- as.data.frame(
       SummarizedExperiment::colData(object)
     )
-
   } else {
-
     stop(
       "'object' must be a Seurat or SingleCellExperiment object.",
       call. = FALSE
@@ -48,7 +48,6 @@ negative_marker_score <- function(
   }
 
   if (!label_column %in% colnames(metadata)) {
-
     stop(
       sprintf(
         "'%s' not found in object metadata.",
@@ -63,7 +62,6 @@ negative_marker_score <- function(
   gene_names <- rownames(object)
 
   for (label in unique(labels)) {
-
     matched_label <- match_labels(
       label,
       names(negative_markers)
@@ -74,10 +72,7 @@ negative_marker_score <- function(
     }
 
     genes <- negative_markers[[matched_label]]
-
-    genes <- genes[
-      genes %in% gene_names
-    ]
+    genes <- genes[genes %in% gene_names]
 
     if (length(genes) == 0) {
       next
@@ -92,7 +87,6 @@ negative_marker_score <- function(
     feature_list[[signature_name]] <- genes
 
     if (inherits(object, "Seurat")) {
-
       object <- UCell::AddModuleScore_UCell(
         object,
         features = feature_list,
@@ -112,9 +106,7 @@ negative_marker_score <- function(
         idx,
         score_column
       ]
-
     } else {
-
       object <- UCell::ScoreSignatures_UCell(
         object,
         features = feature_list,
@@ -140,7 +132,6 @@ negative_marker_score <- function(
       idx <- which(labels == label)
 
       if (score_row %in% rownames(u_scores)) {
-
         scores[idx] <- as.numeric(
           u_scores[
             score_row,

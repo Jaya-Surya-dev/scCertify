@@ -6,7 +6,9 @@
 #' @param marker_score Numeric vector of positive marker scores.
 #' @param negative_marker_score Numeric vector of negative marker scores.
 #' @param positive_threshold Threshold for strong positive evidence.
+#' Must be a single numeric value between 0 and 1.
 #' @param negative_threshold Threshold for strong contradictory evidence.
+#' Must be a single numeric value between 0 and 1.
 #'
 #' @return Character vector containing one discovery-aware status per cell.
 #'
@@ -44,6 +46,30 @@ discovery_status <- function(
       anyNA(negative_marker_score)) {
     stop(
       "Scores must not contain NA values.",
+      call. = FALSE
+    )
+  }
+
+  if (!is.numeric(positive_threshold) ||
+      length(positive_threshold) != 1 ||
+      is.na(positive_threshold) ||
+      positive_threshold < 0 ||
+      positive_threshold > 1) {
+    stop(
+      "'positive_threshold' must be a single numeric value ",
+      "between 0 and 1.",
+      call. = FALSE
+    )
+  }
+
+  if (!is.numeric(negative_threshold) ||
+      length(negative_threshold) != 1 ||
+      is.na(negative_threshold) ||
+      negative_threshold < 0 ||
+      negative_threshold > 1) {
+    stop(
+      "'negative_threshold' must be a single numeric value ",
+      "between 0 and 1.",
       call. = FALSE
     )
   }
