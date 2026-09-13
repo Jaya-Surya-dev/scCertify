@@ -38,7 +38,19 @@ toy_seurat$predicted_label <- rep(
   each = 5
 )
 
-## Create a simple PCA embedding manually
+##############################
+## Development cluster labels
+##############################
+
+toy_seurat$cluster <- c(
+  rep("Cluster1", 5),
+  rep("Cluster2", 5)
+)
+
+##############################
+## Simple PCA embedding
+##############################
+
 pca_embedding <- matrix(
   rnorm(10 * 5),
   nrow = 10,
@@ -46,7 +58,11 @@ pca_embedding <- matrix(
 )
 
 rownames(pca_embedding) <- colnames(toy_seurat)
-colnames(pca_embedding) <- paste0("PC_", 1:5)
+
+colnames(pca_embedding) <- paste0(
+  "PC_",
+  1:5
+)
 
 toy_seurat[["pca"]] <- SeuratObject::CreateDimReducObject(
   embeddings = pca_embedding,
@@ -58,7 +74,7 @@ toy_seurat[["pca"]] <- SeuratObject::CreateDimReducObject(
 ## SingleCellExperiment object
 ##############################
 
-toy_sce <- SingleCellExperiment(
+toy_sce <- SingleCellExperiment::SingleCellExperiment(
   assays = list(
     counts = counts
   )
@@ -67,7 +83,9 @@ toy_sce <- SingleCellExperiment(
 SummarizedExperiment::assay(
   toy_sce,
   "logcounts"
-) <- log2(counts + 1)
+) <- log2(
+  counts + 1
+)
 
 SummarizedExperiment::colData(
   toy_sce
@@ -76,13 +94,28 @@ SummarizedExperiment::colData(
   each = 5
 )
 
+##############################
+## Development cluster labels
+##############################
+
+SummarizedExperiment::colData(
+  toy_sce
+)$cluster <- c(
+  rep("Cluster1", 5),
+  rep("Cluster2", 5)
+)
+
+##############################
+## PCA embedding
+##############################
+
 SingleCellExperiment::reducedDim(
   toy_sce,
   "PCA"
 ) <- pca_embedding
 
 ##############################
-## Marker genes
+## Positive marker genes
 ##############################
 
 toy_markers <- list(
@@ -95,5 +128,22 @@ toy_markers <- list(
     "Gene4",
     "Gene5",
     "Gene6"
+  )
+)
+
+##############################
+## Negative marker genes
+##############################
+
+toy_negative_markers <- list(
+  "T cell" = c(
+    "Gene4",
+    "Gene5",
+    "Gene6"
+  ),
+  "B cell" = c(
+    "Gene1",
+    "Gene2",
+    "Gene3"
   )
 )
