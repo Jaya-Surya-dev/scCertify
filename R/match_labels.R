@@ -20,8 +20,8 @@
 #' @export
 
 match_labels <- function(
-  label,
-  marker_names
+    label,
+    marker_names
 ) {
   label_clean <- tolower(label)
 
@@ -63,15 +63,22 @@ match_labels <- function(
   }
 
   partial_match <- marker_names[
-    grepl(
-      label_clean,
-      marker_clean
-    ) |
-
-      grepl(
-        marker_clean,
-        label_clean
-      )
+    vapply(
+      marker_clean,
+      function(x) {
+        grepl(
+          label_clean,
+          x,
+          fixed = TRUE
+        ) ||
+          grepl(
+            x,
+            label_clean,
+            fixed = TRUE
+          )
+      },
+      logical(1)
+    )
   ]
 
   if (length(partial_match) > 0) {

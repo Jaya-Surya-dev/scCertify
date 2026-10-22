@@ -28,6 +28,7 @@ Imports:
     SummarizedExperiment,
     FNN,
     entropy,
+    Matrix,
     UCell
 Suggests:
     BiocStyle,
