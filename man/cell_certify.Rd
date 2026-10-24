@@ -9,7 +9,9 @@ cell_certify(
   markers,
   label_column = "predicted_label",
   moderate_threshold = 0.5,
-  high_threshold = 0.8
+  high_threshold = 0.8,
+  run_discovery = FALSE,
+  negative_markers = NULL
 )
 }
 \arguments{
@@ -24,10 +26,17 @@ confidence class.}
 
 \item{high_threshold}{Lower threshold for the "High"
 confidence class.}
+
+\item{run_discovery}{Logical. Whether to run the optional
+discovery-aware annotation analysis. Defaults to FALSE.}
+
+\item{negative_markers}{Named list of negative marker genes,
+required when run_discovery = TRUE.}
 }
 \value{
 The input object with confidence scores and classifications
-added to the metadata.
+added to the metadata. When run_discovery = TRUE, discovery-aware
+scores and statuses are also added to the metadata.
 }
 \description{
 Computes confidence scores for cell-type annotations using marker
@@ -61,11 +70,17 @@ markers <- list(
   "B cell" = c("Gene3", "Gene4")
 )
 
+negative_markers <- list(
+  "T cell" = c("Gene3", "Gene4"),
+  "B cell" = c("Gene1", "Gene2")
+)
+
 SingleCellExperiment::reducedDim(sce, "PCA") <- prcomp(
   t(counts),
   rank. = 5
 )$x
 
+# Original workflow: discovery analysis is disabled by default.
 sce <- cell_certify(
   sce,
   markers
@@ -73,6 +88,18 @@ sce <- cell_certify(
 
 head(
   SummarizedExperiment::colData(sce)$confidence_score
+)
+
+# Optional discovery-aware workflow.
+sce_discovery <- cell_certify(
+  sce,
+  markers,
+  run_discovery = TRUE,
+  negative_markers = negative_markers
+)
+
+head(
+  SummarizedExperiment::colData(sce_discovery)$discovery_status
 )
 
 }

@@ -43,3 +43,40 @@ therefore indicates that no measurable negative-marker signal
 was obtained and should not be interpreted as biological evidence
 supporting the predicted identity.
 }
+\examples{
+set.seed(123)
+
+counts <- matrix(
+  rpois(200, lambda = 5),
+  nrow = 20,
+  ncol = 10,
+  dimnames = list(
+    paste0("Gene", seq_len(20)),
+    paste0("Cell", seq_len(10))
+  )
+)
+
+sce <- SingleCellExperiment::SingleCellExperiment(
+  assays = list(
+    logcounts = log1p(counts)
+  )
+)
+
+SummarizedExperiment::colData(sce)$predicted_label <- rep(
+  c("T cell", "B cell"),
+  each = 5
+)
+
+negative_markers <- list(
+  "T cell" = c("Gene3", "Gene4"),
+  "B cell" = c("Gene1", "Gene2")
+)
+
+scores <- negative_marker_score(
+  sce,
+  negative_markers = negative_markers
+)
+
+head(scores)
+
+}

@@ -31,3 +31,36 @@ testing, or biological cell-type annotation. The resulting
 cluster-enriched gene sets can be used to investigate
 heterogeneous, unusual, or potentially novel cell states.
 }
+\examples{
+set.seed(123)
+
+counts <- matrix(
+  rpois(200, lambda = 5),
+  nrow = 20,
+  ncol = 10,
+  dimnames = list(
+    paste0("Gene", seq_len(20)),
+    paste0("Cell", seq_len(10))
+  )
+)
+
+sce <- SingleCellExperiment::SingleCellExperiment(
+  assays = list(
+    logcounts = log1p(counts)
+  )
+)
+
+SummarizedExperiment::colData(sce)$cluster <- rep(
+  c("Cluster1", "Cluster2"),
+  each = 5
+)
+
+signatures <- de_novo_signatures(
+  sce,
+  cluster_column = "cluster",
+  top_n = 5
+)
+
+signatures
+
+}

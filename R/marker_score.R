@@ -1,3 +1,4 @@
+
 #' Marker Consistency Score
 #'
 #' Uses UCell enrichment scoring
@@ -45,11 +46,10 @@
 #' head(scores)
 #'
 #' @export
-
 marker_score <- function(
-  object,
-  markers,
-  label_column = "predicted_label"
+    object,
+    markers,
+    label_column = "predicted_label"
 ) {
   if (inherits(object, "Seurat")) {
     return(

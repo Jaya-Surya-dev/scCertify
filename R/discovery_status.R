@@ -24,6 +24,15 @@
 #' classified as "Possible transitional state". Remaining cells are
 #' classified as "Insufficient evidence".
 #'
+#' @examples
+#' positive_scores <- c(0.9, 0.2, 0.8, 0.3)
+#' negative_scores <- c(0.1, 0.2, 0.9, 0.8)
+#'
+#' discovery_status(
+#'   marker_score = positive_scores,
+#'   negative_marker_score = negative_scores
+#' )
+#'
 #' @export
 
 discovery_status <- function(

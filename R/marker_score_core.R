@@ -1,8 +1,9 @@
+
 marker_score_core <- function(
-  object,
-  markers,
-  label_column,
-  object_type
+    object,
+    markers,
+    label_column,
+    object_type
 ) {
   if (object_type == "Seurat") {
     metadata <- object@meta.data
@@ -76,7 +77,8 @@ marker_score_core <- function(
       object <- UCell::AddModuleScore_UCell(
         object,
         features = feature_list,
-        ncores = 1
+        ncores = 1,
+        BPPARAM = BiocParallel::SerialParam()
       )
 
       metadata <- object@meta.data
@@ -97,7 +99,8 @@ marker_score_core <- function(
         object,
         features = feature_list,
         assay = "logcounts",
-        ncores = 1
+        ncores = 1,
+        BPPARAM = BiocParallel::SerialParam()
       )
 
       ucell <- SingleCellExperiment::altExp(
@@ -105,11 +108,10 @@ marker_score_core <- function(
         "UCell"
       )
 
-      u_scores <-
-        SummarizedExperiment::assay(
-          ucell,
-          "UCell"
-        )
+      u_scores <- SummarizedExperiment::assay(
+        ucell,
+        "UCell"
+      )
 
       score_row <- paste0(
         signature_name,
